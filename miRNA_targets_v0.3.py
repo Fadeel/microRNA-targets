@@ -9,8 +9,7 @@ from collections import OrderedDict
 
 args = sys.argv
 
-#k=7
-
+# input arguments
 inFile = open(args[1])
 miR_file= open(args[2])
 k =int(args[3])
@@ -19,7 +18,7 @@ k =int(args[3])
 out = open (str(k) +"mers.txt","w")
 hits_file = open (str(k) +"mers_hits.txt","w")
 
-
+# a function to read a text file in FASTA format and store it into a  dictionary
 def fastaToDict(inFile):
     dict = {}
     for line in inFile:
@@ -31,7 +30,7 @@ def fastaToDict(inFile):
             dict[seqID] += line.strip().upper()
     return dict
 
-
+# a function to calculate the probability of having a specific sequence "seq" given and first order markov chain (transition_matrix)
 def calculate_prob_MM(seq , transition_matrix):
     transition_dict ={  "AA":transition_matrix[0],"AC":transition_matrix[1],"AG":transition_matrix[2],"AT":transition_matrix[3],
                       "CA":transition_matrix[4],"CC":transition_matrix[5],"CG":transition_matrix[6],"CT":transition_matrix[7],
@@ -42,6 +41,7 @@ def calculate_prob_MM(seq , transition_matrix):
         p *=  transition_dict[seq[i-1] + seq[i]]
     return p
 
+# a function to calculate the first order markov chain (transition_matrix) from a sequence
 def firstOrderMMConstruction(sequence):
     seq_len=len(sequence)
     transition_counts ={  "AA":0,"AC":0,"AG":0,"AT":0,
@@ -62,6 +62,7 @@ def firstOrderMMConstruction(sequence):
     print(matrix)
     return new_values
 
+# a function to generate a sequence of length "seq_len" given first order markov chain (transition_matrix)
 def firstOrderMMGeneration(transitionMatrix,seq_len):
     alphabet = ['A','C','G','T']
     s= ''.join(np.random.choice(alphabet,1,[.25,.25,.25,.25]))  # generate random first letter
@@ -76,7 +77,7 @@ def firstOrderMMGeneration(transitionMatrix,seq_len):
             s += ''.join(np.random.choice(alphabet,1,p = transitionMatrix[12:16]))
     return s
 
-
+# a hash function that takes a sequence and return a hash value
 def encoding(seq):
     k=len(seq)
     str=''
@@ -122,6 +123,7 @@ def main(miR_file,k):
     [hash_tbl, transcriptIDs]  = indexing(utr_regions,k)
     dict = {}
     miR_seed = {}
+	# reading miRNAs sequences files
     for line in miR_file:
         splitted = line.split(" ")
         if line[0] == '>':
@@ -154,7 +156,7 @@ def main(miR_file,k):
                     dict[id] [transcriptIDs[hits[i][0]-1]] += 1
     return dict,len_dict,firstOrderModels ,miR_seed
 #########################################################
-
+# rwriting output files
 hits_file.write("miRNA_seed" + "\t" +"miRNA_ID" + '\t' +"targetSeqID" + "\t" + "hit_start_position" + "\t" +
                 "targetSeqLength"+ "\n")
 
@@ -187,4 +189,8 @@ for i in range(0,len(dict)):
         out.write('%-14s \t %20s \t %20s \t %25s \t %30s \t %4f \n' %(miR_seed[mir],mir,keys[j], str(num_ocur), str(num_possible_kmers)
                                                    , transc_p ))
 
-
+# close files
+inFile.close()
+miR_file.close()
+out.close()
+hits_file.close()
