@@ -1,5 +1,5 @@
 # microRNA-targets
-This Python script is used to find potential miRNA seed binding sites. Basically, this script is used to find a small DNA sequence pattern (6-8 characters long) in a database of longer DNA seqences. For fast searching, we first store longer DNA sequences in a hash table (a `dict` in Python). 
+This Python script is used to find potential miRNA seed binding sites. Basically, this script is used to find a small DNA sequence pattern (6-8 characters long) in a database of longer DNA seqences. For fast searching, we first store longer DNA sequences in a hash table. 
 
 ## input arguments:
 It takes 3 parameter: target sequences (Fasta file), miRNA sequences (Fasta file) and seed length(6,7 and 8).
